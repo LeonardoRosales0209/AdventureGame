@@ -35,3 +35,15 @@ let intelligence = 10;
 
 // Coloca un mensaje de bienvenida al jugador y muestra su oro inicial
 console.log(`Bienvenido, ${playerName}! Comienzas tu aventura con ${playerGold} piezas de oro.`);
+
+let weaponDamage = 0;
+console.log("Daño de arma inicial: " + weaponDamage);
+console.log("Cuando compres una espada, el daño incrementará a 10!");
+
+let monsterDefense = 5;
+console.log("Defensa del monstruo: " + monsterDefense);
+console.log("Los monstruos pueden resistir cierto daño en combate!.");
+
+let healingPotionValue = 30;
+console.log("Valor de la poción de curación: " + healingPotionValue);
+console.log("Una poción te restaurará 30 de salud!.");
