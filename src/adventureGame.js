@@ -18,7 +18,7 @@ let playerName = "";
 
 // Obten el nombre del jugador usando readline-sync
 while (!playerName) {
-  playerName = readline.question("Cuál es tu nombre, aventurero? ");
+  playerName = readline.question("Cuál es tu nombre, aventurero?\n");
 }
 
 // Creamos variables
