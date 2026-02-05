@@ -121,5 +121,48 @@ while(gameRunning){
         break;
     }
   }
+  else if(currentLocation === "forest"){
+    console.log("Estás en el bosque. Hay rumores de que hay un dragón en las montañas...");
+    console.log("\n¡Un monstruo salvaje aparece!");
+    while(monsterDefense > 0){
+      console.log(`Defensa del monstruo restante: ${monsterDefense}`);
+      let attackDamage = strength + weaponDamage;
+      console.log(`Atacas al monstruo y le haces ${attackDamage} puntos de daño.`);
+      monsterDefense -= attackDamage;
+    }
+    console.log("¡Has derrotado al monstruo!");
+    console.log("\n¿Qué te gustaría hacer ahora?");
+    console.log("1. Regresar al pueblo (village)");
+    console.log("2. Revisar tu estado actual");
+    console.log("3. Salir del juego");
+
+    playerSelection = readline.question("Selecciona una opción (1-3): ");
+    numSelected = parseInt(playerSelection);
+    switch(numSelected){
+      case 1:
+        currentLocation = "village";
+        monsterDefense = 5;
+        break;
+      case 2:
+        console.log(`Estado actual de ${playerName}: Salud: ${health}, Oro: ${playerGold}, Inventario: ${inventory.join(", ")}`);
+        break;
+      case 3:
+        console.log("Gracias por jugar. ¡Hasta la próxima aventura!");
+        gameRunning = false;
+      default:
+        console.log("Opción no válida. Por favor, selecciona una opción del 1 al 3.");
+        break;
+    }
+  }
 }
+
+ // Create for loop to check inventory slots
+  for(let i = 0; i < inventory.length; i++){
+    console.log("Revisando inventario en el slot " + (i + 1));
+    if(inventory[i]){
+      console.log("Inventario slot " + (i + 1) + ": " + inventory[i]);
+    } else {
+      console.log("Inventario slot " + (i + 1) + ": Vacío");
+    }
+  }
 
