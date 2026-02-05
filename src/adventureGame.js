@@ -48,39 +48,78 @@ let healingPotionValue = 30;
 console.log("Valor de la poción de curación: " + healingPotionValue);
 console.log("Una poción te restaurará 30 de salud!.");
 
-let firstTimePlaying= true;
 let firstVisit = true;
 
 console.log("Ubicación inicial: " + currentLocation);
-console.log("Primera vez jugando: " + firstTimePlaying);
+let playerSelection = "";
+let numSelected = 0;
 
-//Consulta si el jugador está en la taberna (tavern) y muestra un mensaje apropiado
-if (currentLocation === "tavern") {
-  console.log("Estás en la taberna. Puedes descansar y recuperar salud aquí.");
-}
-else{
-  console.log("No estás en la taberna. Explora el mundo para encontrarla.");
-}
+while(gameRunning){
+  console.log("\n=== UBICACIÓN ACTUAL: " + currentLocation.toUpperCase() + " ===");
+  if(currentLocation === "village"){
+    console.log("=== PUEBLO ===");
+    console.log("Estás en el pueblo. El herrero y el mercado están cerca");
+    console.log("\n¿Qué te gustaría hacer?");
+    console.log("1. Ir al herrero (blacksmith)");
+    console.log("2. Ir al mercado (market)");
+    console.log("3. Ir al bosque (forest)");
+    console.log("4. Revisar tu estado actual");
+    console.log("5. Salir del juego");
 
-if(currentLocation === "village"){
-  console.log("=== PUEBLO ===");
-  if(firstVisit){
-    console.log("Es tu primera vez en el pueblo. Explora y conoce a los habitantes.");
-    firstVisit = false;
+    if(firstVisit){
+      console.log("Es tu primera vez en el pueblo. Explora y conoce a los habitantes.");
+      console.log("\nPueblerino: ¡Bienvenido al pueblo, aventurero " + playerName + "! Hay rumores de que hay un dragón en las montañas ...");
+      firstVisit = false;
+    }
+
+    playerSelection = readline.question("Selecciona una opción (1-5): ");
+    numSelected = parseInt(playerSelection);
+
+    switch(numSelected){
+      case 1:
+        currentLocation = "blacksmith";
+        break;
+      case 2:
+        currentLocation = "market";
+        break;
+      case 3:
+        currentLocation = "forest";
+        break;
+      case 4:
+        console.log(`Estado actual de ${playerName}: Salud: ${health}, Oro: ${playerGold}, Inventario: ${inventory.join(", ")}`);
+        break;
+      case 5:
+        console.log("Gracias por jugar. ¡Hasta la próxima aventura!");
+        gameRunning = false;
+      default:
+        console.log("Opción no válida. Por favor, selecciona una opción del 1 al 5.");
+        break;
+    }
+
   }
-  console.log("Estás en el pueblo. El herrero y el mercado están cerca");
-  console.log("\n¿Qué te gustaría hacer?");
-  console.log("1. Ir al herrero (blacksmith)");
-  console.log("2. Ir al mercado (market)");
-  console.log("3. Ir al bosque (forest)");
-  console.log("4. Revisar tu estado actual");
-  console.log("5. Salir del juego");
+  else if(currentLocation === "blacksmith"){
+    console.log("Estás en el herrero. Puedes realizar las siguientes acciones:");
+    console.log("1. Ir al pueblo (village)");
+    console.log("2. Revisar tu estado actual");
+    console.log("3. Salir del juego");
 
-  console.log("\nPueblerino: ¡Bienvenido al pueblo, aventurero " + playerName + "! Hay rumores de que hay un dragón en las montañas ...");
+    playerSelection = readline.question("Selecciona una opción (1-3): ");
+    numSelected = parseInt(playerSelection);
+
+    switch(numSelected){
+      case 1:
+        currentLocation = "village";
+        break;
+      case 2:
+        console.log(`Estado actual de ${playerName}: Salud: ${health}, Oro: ${playerGold}, Inventario: ${inventory.join(", ")}`);
+        break;
+      case 3:
+        console.log("Gracias por jugar. ¡Hasta la próxima aventura!");
+        gameRunning = false;
+      default:
+        console.log("Opción no válida. Por favor, selecciona una opción del 1 al 3.");
+        break;
+    }
+  }
 }
-else if(currentLocation === "blacksmith"){
-  console.log("Estás en el herrero. Puedes realizar las siguientes acciones:");
-  console.log("1. Ir al pueblo (village)");
-  console.log("2. Revisar tu estado actual");
-  console.log("3. Salir del juego");
-}
+
