@@ -16,25 +16,12 @@ console.log("Prepare yourself for an epic journey!");
 
 let playerName = "";
 
-// Obten el nombre del jugador usando readline-sync
-while (!playerName) {
-  playerName = readline.question("Cuál es tu nombre, aventurero?\n");
-}
-
 // Creamos variables
 let health = 100;
 let playerGold = 20;
 let currentLocation = "village";
 let gameRunning = true;
 let inventory = [];
-
-// Crea variables para stats del jugador
-let strength = 10;
-let agility = 10;
-let intelligence = 10;
-
-// Coloca un mensaje de bienvenida al jugador y muestra su oro inicial
-console.log(`Bienvenido, ${playerName}! Comienzas tu aventura con ${playerGold} piezas de oro.`);
 
 let weaponDamage = 0;
 console.log("Daño de arma inicial: " + weaponDamage);
@@ -48,11 +35,23 @@ let healingPotionValue = 30;
 console.log("Valor de la poción de curación: " + healingPotionValue);
 console.log("Una poción te restaurará 30 de salud!.");
 
-let firstVisit = true;
+console.log("=================================");
+console.log("        DESAFÍO DEL DRAGÓN       ");
+console.log("=================================");
+console.log("\nTu objetivo: Derrotar al dragón de las montañas!");
 
-console.log("Ubicación inicial: " + currentLocation);
-let playerSelection = "";
-let numSelected = 0;
+// Obten el nombre del jugador usando readline-sync
+while (!playerName) {
+  playerName = readline.question("Cuál es tu nombre, aventurero?\n");
+}
+
+// Coloca un mensaje de bienvenida al jugador y muestra su oro inicial
+console.log(`Bienvenido, ${playerName}! Comienzas tu aventura con ${playerGold} piezas de oro.`);
+
+let firstVisit = true;
+let hasWeapon = false;
+let hasPotion = false;
+let hasArmor = false;
 
 while(gameRunning){
   console.log("\n=== UBICACIÓN ACTUAL: " + currentLocation.toUpperCase() + " ===");
@@ -64,105 +63,155 @@ while(gameRunning){
     console.log("2. Ir al mercado (market)");
     console.log("3. Ir al bosque (forest)");
     console.log("4. Revisar tu estado actual");
-    console.log("5. Salir del juego");
+    console.log("5. Revisar tu inventario");
+    console.log("6. Salir del juego");
 
     if(firstVisit){
       console.log("Es tu primera vez en el pueblo. Explora y conoce a los habitantes.");
       console.log("\nPueblerino: ¡Bienvenido al pueblo, aventurero " + playerName + "! Hay rumores de que hay un dragón en las montañas ...");
       firstVisit = false;
     }
-
-    playerSelection = readline.question("Selecciona una opción (1-5): ");
-    numSelected = parseInt(playerSelection);
-
-    switch(numSelected){
-      case 1:
-        currentLocation = "blacksmith";
-        break;
-      case 2:
-        currentLocation = "market";
-        break;
-      case 3:
-        currentLocation = "forest";
-        break;
-      case 4:
-        console.log(`Estado actual de ${playerName}: Salud: ${health}, Oro: ${playerGold}, Inventario: ${inventory.join(", ")}`);
-        break;
-      case 5:
-        console.log("Gracias por jugar. ¡Hasta la próxima aventura!");
-        gameRunning = false;
-      default:
-        console.log("Opción no válida. Por favor, selecciona una opción del 1 al 5.");
-        break;
-    }
-
   }
   else if(currentLocation === "blacksmith"){
-    console.log("Estás en el herrero. Puedes realizar las siguientes acciones:");
-    console.log("1. Ir al pueblo (village)");
+    console.log("=== HERRERO ===");
+    console.log("El calor de la forja te envuelve mientras entras al herrero. Armas y armaduras relucen en las paredes, y el herrero te saluda con una sonrisa.");
+    console.log("\n¿Qué te gustaría hacer?");
+    console.log("1. Regresa al pueblo (village)");
     console.log("2. Revisar tu estado actual");
-    console.log("3. Salir del juego");
-
-    playerSelection = readline.question("Selecciona una opción (1-3): ");
-    numSelected = parseInt(playerSelection);
-
-    switch(numSelected){
-      case 1:
-        currentLocation = "village";
-        break;
-      case 2:
-        console.log(`Estado actual de ${playerName}: Salud: ${health}, Oro: ${playerGold}, Inventario: ${inventory.join(", ")}`);
-        break;
-      case 3:
-        console.log("Gracias por jugar. ¡Hasta la próxima aventura!");
-        gameRunning = false;
-      default:
-        console.log("Opción no válida. Por favor, selecciona una opción del 1 al 3.");
-        break;
-    }
+    console.log("3. Revisar tu inventario");
+    console.log("4. Salir del juego");
+  }
+  else if(currentLocation === "market"){
+    console.log("=== MERCADO ===");
+    console.log("Mercaderes venden sus mercancías en coloridos puestos. Un vendedor de pociones atrapa tu atención.");
+    console.log("\n¿Qué te gustaría hacer?");
+    console.log("1. Regresa al pueblo (village)");
+    console.log("2. Revisar tu estado actual");
+    console.log("3. Revisar tu inventario");
+    console.log("4. Salir del juego");
   }
   else if(currentLocation === "forest"){
+    console.log("=== BOSQUE ===");
     console.log("Estás en el bosque. Hay rumores de que hay un dragón en las montañas...");
-    console.log("\n¡Un monstruo salvaje aparece!");
-    while(monsterDefense > 0){
-      console.log(`Defensa del monstruo restante: ${monsterDefense}`);
-      let attackDamage = strength + weaponDamage;
-      console.log(`Atacas al monstruo y le haces ${attackDamage} puntos de daño.`);
-      monsterDefense -= attackDamage;
-    }
-    console.log("¡Has derrotado al monstruo!");
-    console.log("\n¿Qué te gustaría hacer ahora?");
-    console.log("1. Regresar al pueblo (village)");
-    console.log("2. Revisar tu estado actual");
-    console.log("3. Salir del juego");
+    console.log("Un bosque oscuro te rodea. Escuchas ruidos extraños...");
 
-    playerSelection = readline.question("Selecciona una opción (1-3): ");
-    numSelected = parseInt(playerSelection);
-    switch(numSelected){
-      case 1:
-        currentLocation = "village";
-        monsterDefense = 5;
-        break;
-      case 2:
-        console.log(`Estado actual de ${playerName}: Salud: ${health}, Oro: ${playerGold}, Inventario: ${inventory.join(", ")}`);
-        break;
-      case 3:
-        console.log("Gracias por jugar. ¡Hasta la próxima aventura!");
-        gameRunning = false;
-      default:
-        console.log("Opción no válida. Por favor, selecciona una opción del 1 al 3.");
-        break;
+    //Inicio de batalla
+    let inBattle = true;
+    let monsterHealth = 3;
+    console.log("\n¡Un monstruo salvaje aparece!");
+    while(inBattle){
+      console.log("Salud del monstruo: " + monsterHealth);
+      console.log(`Atacas al monstruo`);
+      monsterHealth--;
+      if(monsterHealth <= 0){
+        console.log("¡Has derrotado al monstruo!");
+        inBattle = false;
+      }
     }
+    currentLocation = "village"; // Regresas al pueblo después de la batalla
+    console.log("\nRegresas al pueblo después de la batalla. El pueblo está tranquilo, pero sabes que el dragón sigue ahí afuera...");
+  }
+
+  // Valida la entrada del jugador para seleccionar una opción
+  let validChoice = false;
+  while(!validChoice){
+    try {
+      let choice = readline.question("Selecciona una opción: ");
+
+      // Revisa si la entrada es vacía
+      if(choice.trim() === "") {
+        throw "Entrada vacía. Por favor, introduce una opción válida.";
+      }
+
+      // Convierte a número y revisa si es un número válido
+      let numChoice = parseInt(choice);
+      if(isNaN(numChoice)) {
+        throw "Entrada no válida. Por favor, introduce un número.";
+      }
+
+      // Actua de acuerdo a la ubicación
+      if(currentLocation === "village"){
+        if(numChoice < 1 || numChoice > 6) {
+          throw "Opción no válida. Por favor, selecciona una opción del 1 al 6.";
+        }
+
+        validChoice = true;
+        if(numChoice === 1) {
+          currentLocation = "blacksmith";
+          console.log("\nTe diriges al herrero...");
+        } else if(numChoice === 2) {
+          currentLocation = "market";
+          console.log("\nTe diriges al mercado...");
+        } else if(numChoice === 3) {
+          currentLocation = "forest";
+          console.log("\nTe diriges al bosque...");
+        } else if(numChoice === 4) {
+          console.log("\n=== " + playerName + "'s Status ===");
+          console.log("❤️  Health: " + playerHealth);
+          console.log("💰 Gold: " + playerGold);
+          console.log("📍 Location: " + currentLocation);
+        } else if(numChoice === 5) {
+          // Muestra el inventario del jugador
+          for(let slot = 0; slot < 3; slot++){
+            console.log("Revisando el inventario en el slot " + (slot + 1));
+            if(slot === 1 && hasWeapon){
+              console.log("Inventario slot " + (slot + 1) + ": Espada");
+            } else if(slot === 2 && hasPotion){
+              console.log("Inventario slot " + (slot + 1) + ": Poción de curación");
+            } else if(slot === 3 && hasArmor){
+              console.log("Inventario slot " + (slot + 1) + ": Escudo");
+            } else {
+              console.log("Inventario slot " + (slot + 1) + ": Vacío");
+            }
+          }
+        } else if(numChoice === 6) {
+          console.log("\nGracias por jugar. ¡Hasta la próxima aventura!");
+          gameRunning = false;
+        }
+    }
+      else if(currentLocation === "blacksmith" || currentLocation === "market"){
+        if(numChoice < 1 || numChoice > 4) {
+          throw "Opción no válida. Por favor, selecciona una opción del 1 al 4.";
+        }
+        
+        validChoice = true;
+        if(numChoice === 1) {
+          currentLocation = "village";
+          console.log("\nRegresas al pueblo...");
+        } else if(numChoice === 2) {
+          console.log("\n=== " + playerName + "'s Status ===");
+          console.log("❤️  Health: " + playerHealth);
+          console.log("💰 Gold: " + playerGold);
+          console.log("📍 Location: " + currentLocation);
+        } else if(numChoice === 3) {
+          // Muestra el inventario del jugador
+          for(let slot = 0; slot < 3; slot++){
+            console.log("Revisando el inventario en el slot " + (slot + 1));
+            if(slot === 1 && hasWeapon){
+              console.log("Inventario slot " + (slot + 1) + ": Espada");
+            } else if(slot === 2 && hasPotion){
+              console.log("Inventario slot " + (slot + 1) + ": Poción de curación");
+            } else if(slot === 3 && hasArmor){
+              console.log("Inventario slot " + (slot + 1) + ": Escudo");
+            } else {
+              console.log("Inventario slot " + (slot + 1) + ": Vacío");
+            }
+          }
+        } else if(numChoice === 4) {
+          console.log("\nGracias por jugar. ¡Hasta la próxima aventura!");
+          gameRunning = false;
+        }
+      }
+    } catch (error) {
+      console.log("\nError: " + error);
+      console.log("Por favor, intenta de nuevo.");
+    }
+  }
+
+  // Revisa si el jugador ha muerto
+  if(health <= 0){
+    console.log("\nHas sido derrotado por el dragón... ¡Pero no te rindas, aventurero " + playerName + "! Intenta de nuevo y derrota al dragón para salvar el reino!");
+    gameRunning = false;
   }
 }
-
- // Crea un loop para revisar los slots del inventario
-  for(let i = 0; i < inventory.length; i++){
-    console.log("Revisando inventario en el slot " + (i + 1));
-    if(inventory[i]){
-      console.log("Inventario slot " + (i + 1) + ": " + inventory[i]);
-    } else {
-      console.log("Inventario slot " + (i + 1) + ": Vacío");
-    }
-  }
 
