@@ -156,7 +156,7 @@ while(gameRunning){
   }
 }
 
- // Create for loop to check inventory slots
+ // Crea un loop para revisar los slots del inventario
   for(let i = 0; i < inventory.length; i++){
     console.log("Revisando inventario en el slot " + (i + 1));
     if(inventory[i]){
