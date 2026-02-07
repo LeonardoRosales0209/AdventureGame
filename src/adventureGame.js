@@ -37,6 +37,31 @@ let healingPotionValue = 30;
 console.log("Valor de la poción de curación: " + healingPotionValue);
 console.log("Una poción te restaurará 30 de salud!.");
 
+
+const healthPotion = {
+    name: "Pocion",
+    type: "potion",
+    value: 5,     // Cost in gold
+    effect: 30,   // Healing amount
+    description: "Restaura 30 puntos de salud"
+};
+
+const sword = {
+    name: "Espada",
+    type: "weapon",
+    value: 10,    // Cost in gold
+    effect: 10,   // Damage amount
+    description: "Una espada resistente para combate"
+};
+
+const shield = {
+    name: "Escudo",
+    type: "armor",
+    value: 15,    // Cost in gold
+    effect: 5,    // Defense amount
+    description: "Un escudo fuerte para protegerte"
+};
+
 console.log("=================================");
 console.log("        DESAFÍO DEL DRAGÓN       ");
 console.log("=================================");
@@ -137,10 +162,14 @@ function showOptions(){
 function processCombat(){
     //Inicio de batalla
     let inBattle = true;
-    let monsterHealth = 3;
+    let monsterHealth = 30;
     console.log("\n¡Un monstruo salvaje aparece!");
+
     while(inBattle){
-      if(!inventory.includes("Espada")){
+      const weapon = inventory.find(item => item.type === "weapon");
+      const armor = inventory.find(item => item.type === "armor");
+
+      if(!weapon){
         console.log("No tienes un arma para luchar. El monstruo te ataca y pierdes 10 de salud.");
         health -= 10;
         console.log("Tu salud actual es: " + health);
@@ -152,7 +181,12 @@ function processCombat(){
       else{
         console.log("\nTu salud: " + health);
         console.log("Salud del monstruo: " + monsterHealth);
-        monsterHealth -= (weaponDamage - monsterDefense);
+        
+        let danho = weapon.effect - monsterDefense; // Calcula el daño considerando la defensa del monstruo
+        let finalDamage = danho > 0 ? danho : 0; // El daño no puede ser negativo
+
+        monsterHealth -= finalDamage; // El daño se reduce por la defensa del monstruo
+
         if(monsterHealth <= 0){
           console.log("¡Has derrotado al monstruo!");
           console.log("Ganas 10 piezas de oro.");
@@ -160,10 +194,12 @@ function processCombat(){
           inBattle = false;    
           currentLocation = "village"; // Regresas al pueblo después de la batalla
           console.log("\nRegresas al pueblo después de la batalla. El pueblo está tranquilo, pero sabes que el dragón sigue ahí afuera...");
+          return;
         }
         else{
           console.log("El monstruo te ataca y pierdes 10 de salud.");
-          health -= 20 - defense; // Si tienes defensa, reduce el daño recibido
+          let damageTaken = armor ? 10 - armor.effect : 10; // Calcula el daño que recibes considerando la defensa de la armadura
+          health -= damageTaken; // Aplica el daño recibido
           healing();
           if(health <= 0){            
             console.log("Has sido derrotado por el monstruo...");
@@ -176,14 +212,19 @@ function processCombat(){
       }
     }}
 
+function hasItemType(type) {
+    return inventory.some(item => item.type === type);
+}
+
 function healing(){
-  if(health < 30 && inventory.includes("Pocion")){
+  let pocion = inventory.find(item => item.type === "potion");
+  if(health < 30 && pocion){
     console.log("Usas una poción de curación para restaurar tu salud.");
-    health += healingPotionValue;
+    health += pocion.effect; // Restaura salud según el efecto de la poción
     if(health > max_health){
       health = max_health;
     }
-    inventory.splice(inventory.indexOf("Pocion"), 1); // Elimina la poción del inventario después de usarla
+    inventory.splice(inventory.indexOf(pocion), 1); // Elimina la poción del inventario después de usarla
     console.log("Tu salud actual es: " + health);
   }
 }
@@ -219,19 +260,19 @@ function actionLocation(choice){
     validChoice = true;
     if(currentLocation === "blacksmith"){
       if(choice === 1) {
-        if(playerGold >= 10){
-          playerGold -= 10;
-          inventory.push("Espada");
-          weaponDamage = 10;
+        if(playerGold >= sword.value){
+          playerGold -= sword.value ;
+          inventory.push(sword);
+          weaponDamage = sword.effect;
           console.log("\nCompraste una espada. Tu daño de arma ahora es: " + weaponDamage);
         } else {
           console.log("\nNo tienes suficiente oro para comprar la espada.");
         }
       } else if(choice === 2) {
-        if(playerGold >= 15){
-          playerGold -= 15;
-          inventory.push("Escudo");
-          defense = 5;
+        if(playerGold >= shield.value){
+          playerGold -= shield.value;
+          inventory.push(shield);
+          defense = shield.effect;
           console.log("\nCompraste una armadura. Tu defensa ahora es: " + defense);
         } else {
           console.log("\nNo tienes suficiente oro para comprar la armadura.");
@@ -248,9 +289,9 @@ function actionLocation(choice){
       }
     } else if(currentLocation === "market"){
       if(choice === 1) {
-        if(playerGold >= 5){
-          playerGold -= 5;
-          inventory.push("Pocion");
+        if(playerGold >= healthPotion.value){
+          playerGold -= healthPotion.value;
+          inventory.push(healthPotion);
           console.log("\nCompraste una poción de curación. Ahora puedes usarla para restaurar tu salud cuando sea necesario.");
         } else {
           console.log("\nNo tienes suficiente oro para comprar la poción.");
@@ -285,7 +326,7 @@ function checkInventory(){
   }
   else{
     inventory.forEach((item, index) => {
-      console.log((index + 1) + ". " + item);
+      console.log((index + 1) + ". " + item.name + " - " + item.description);
     });
   }
 }
