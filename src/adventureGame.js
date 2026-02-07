@@ -47,19 +47,35 @@ const healthPotion = {
 };
 
 const sword = {
-    name: "Espada",
+    name: "Sword",
     type: "weapon",
     value: 10,    // Cost in gold
     effect: 10,   // Damage amount
     description: "Una espada resistente para combate"
 };
 
+const steel_sword = {
+    name: "Steel Sword",
+    type: "weapon",
+    value: 20,    // Cost in gold
+    effect: 15,   // Damage amount
+    description: "Una espada de acero para un daño mayor"
+};
+
 const shield = {
-    name: "Escudo",
+    name: "Wooden Shield",
     type: "armor",
-    value: 15,    // Cost in gold
+    value: 8,    // Cost in gold
     effect: 5,    // Defense amount
-    description: "Un escudo fuerte para protegerte"
+    description: "Reduces damage taken in combat"
+};
+
+const iron_shield = {
+    name: "Iron Shield",
+    type: "armor",
+    value: 15,   // Cost in gold
+    effect: 10,   // Defense amount
+    description: "Una armadura de hierro para una mejor defensa"
 };
 
 console.log("=================================");
@@ -98,7 +114,7 @@ while(gameRunning){
       }
 
       // Actua de acuerdo a la ubicación
-      validChoice = actionLocation(numChoice);
+      validChoice = showLocation(numChoice);
     } catch (error) {
       console.log("\nError: " + error);
       console.log("Por favor, intenta de nuevo.");
@@ -155,23 +171,43 @@ function showOptions(){
     console.log("=== BOSQUE ===");
     console.log("Estás en el bosque. Hay rumores de que hay un dragón en las montañas...");
     console.log("Un bosque oscuro te rodea. Escuchas ruidos extraños...");
-    processCombat();
+    handleCombat();
   }    
 }
 
-function processCombat(){
+function handleCombat(isDragon = false){
     //Inicio de batalla
-    let inBattle = true;
-    let monsterHealth = 30;
-    console.log("\n¡Un monstruo salvaje aparece!");
+    let inBattle = true;    
+    if(isDragon){
+      console.log("\n¡El dragón aparece con un rugido aterrador!");
+      monsterHealth = 50;
+      monsterDefense = 10;
+    }
+    else{
+      console.log("\n¡Un monstruo salvaje aparece!");
+      monsterHealth = 20;
+      monsterDefense = 5;
+    }
 
     while(inBattle){
-      const weapon = inventory.find(item => item.type === "weapon");
-      const armor = inventory.find(item => item.type === "armor");
+      const weapon = getBestItem("weapon");
+      const armor = getBestItem("armor");
 
-      if(!weapon){
-        console.log("No tienes un arma para luchar. El monstruo te ataca y pierdes 10 de salud.");
-        health -= 10;
+      let monsterDamage = isDragon ? 20 : 10;
+
+      if(isDragon){
+        if(!hasGoodEquipment()){
+          console.log("El dragón es demasiado fuerte para ti. Sin un buen equipo, no puedes enfrentarlo. Huyes del combate.");
+          inBattle = false;
+          return;
+        }
+        else{
+          console.log("Tienes un buen equipo para enfrentar al dragón. ¡Prepárate para la batalla!");
+        }
+      }
+      if(!weapon){        
+        console.log("No tienes un arma para luchar. El monstruo te ataca y pierdes " + monsterDamage + " de salud.");
+        health -= monsterDamage;
         console.log("Tu salud actual es: " + health);
         healing();
         console.log("Huyes del combate.");
@@ -197,8 +233,9 @@ function processCombat(){
           return;
         }
         else{
-          console.log("El monstruo te ataca y pierdes 10 de salud.");
-          let damageTaken = armor ? 10 - armor.effect : 10; // Calcula el daño que recibes considerando la defensa de la armadura
+          let damageTaken = armor ? monsterDamage - armor.effect : monsterDamage; // Calcula el daño que recibes considerando la defensa de la armadura
+          if(damageTaken < 0) damageTaken = 1; // El daño no puede ser negativo
+          console.log("El monstruo te ataca y pierdes " + damageTaken + " de salud.");
           health -= damageTaken; // Aplica el daño recibido
           healing();
           if(health <= 0){            
@@ -229,7 +266,7 @@ function healing(){
   }
 }
 
-function actionLocation(choice){
+function showLocation(choice){
   if(currentLocation === "village"){
     if(choice < 1 || choice > 6) {
       throw "Opción no válida. Por favor, selecciona una opción del 1 al 6.";
@@ -259,25 +296,10 @@ function actionLocation(choice){
         
     validChoice = true;
     if(currentLocation === "blacksmith"){
-      if(choice === 1) {
-        if(playerGold >= sword.value){
-          playerGold -= sword.value ;
-          inventory.push(sword);
-          weaponDamage = sword.effect;
-          console.log("\nCompraste una espada. Tu daño de arma ahora es: " + weaponDamage);
-        } else {
-          console.log("\nNo tienes suficiente oro para comprar la espada.");
-        }
-      } else if(choice === 2) {
-        if(playerGold >= shield.value){
-          playerGold -= shield.value;
-          inventory.push(shield);
-          defense = shield.effect;
-          console.log("\nCompraste una armadura. Tu defensa ahora es: " + defense);
-        } else {
-          console.log("\nNo tienes suficiente oro para comprar la armadura.");
-        }
-      } else if(choice === 3) {
+      if(choice === 1 || choice === 2) {
+        buyFromBlacksmith(choice);
+      }
+      else if(choice === 3) {
         currentLocation = "village";
         console.log("\nRegresas al pueblo...");
       } else if(choice === 4) {
@@ -289,14 +311,9 @@ function actionLocation(choice){
       }
     } else if(currentLocation === "market"){
       if(choice === 1) {
-        if(playerGold >= healthPotion.value){
-          playerGold -= healthPotion.value;
-          inventory.push(healthPotion);
-          console.log("\nCompraste una poción de curación. Ahora puedes usarla para restaurar tu salud cuando sea necesario.");
-        } else {
-          console.log("\nNo tienes suficiente oro para comprar la poción.");
-        }
-      } else if(choice === 2) {
+        buyFromMarket(choice);
+      }
+      else if(choice === 2) {
         currentLocation = "village";
         console.log("\nRegresas al pueblo...");
       } else if(choice === 3) {
@@ -310,6 +327,66 @@ function actionLocation(choice){
   }
 
   return validChoice;
+}
+
+function buyFromBlacksmith(choice){
+  if(choice === 1) {
+    console.log("\nEl herrero te muestra sus mejores armas y armaduras. Puedes comprar una espada para aumentar tu daño, cuentas con estas opciones.");
+    let availableWeapons = [sword, steel_sword];
+    availableWeapons.forEach((item, index) => {
+      console.log((index + 1) + ". " + item.name + " - " + item.description + " (Cost: " + item.value + " gold)");
+    });
+    weaponChoice = readline.question("Selecciona el número del arma que deseas comprar: ");
+    let weaponIndex = parseInt(weaponChoice) - 1;
+    if(weaponIndex < 0 || weaponIndex >= availableWeapons.length) {
+      console.log("Opción no válida.");
+      return;
+    }
+
+    const selectedWeapon = availableWeapons[weaponIndex];
+    if(playerGold >= selectedWeapon.value){
+      playerGold -= selectedWeapon.value ;
+      inventory.push(selectedWeapon);
+      weaponDamage = selectedWeapon.effect;
+      console.log("\nCompraste la espada " + selectedWeapon.name + ". Tu daño ahora es: " + weaponDamage);
+    } else {
+      console.log("\nNo tienes suficiente oro para comprar la espada.");
+    }
+  } else if(choice === 2) {
+    console.log("\nEl herrero te muestra sus mejores armaduras. Puedes comprar una armadura para aumentar tu defensa, cuentas con estas opciones.");
+    let availableArmors = [shield, iron_shield];
+    availableArmors.forEach((item, index) => {
+      console.log((index + 1) + ". " + item.name + " - " + item.description + " (Cost: " + item.value + " gold)");
+    });
+    armorChoice = readline.question("Selecciona el número de la armadura que deseas comprar: ");
+    let armorIndex = parseInt(armorChoice) - 1;
+    if(armorIndex < 0 || armorIndex >= availableArmors.length) {
+      console.log("Opción no válida.");
+      return;
+    }
+
+    const selectedArmor = availableArmors[armorIndex];
+    if(playerGold >= selectedArmor.value){
+      playerGold -= selectedArmor.value;
+      inventory.push(selectedArmor);
+      defense = selectedArmor.effect;
+      console.log("\nCompraste la armadura " + selectedArmor.name + ". Tu defensa ahora es: " + defense);
+    } else {
+      console.log("\nNo tienes suficiente oro para comprar la armadura.");
+    }
+  }
+}
+
+function buyFromMarket(choice){
+  if(choice === 1) {
+    if(playerGold >= healthPotion.value){
+      playerGold -= healthPotion.value;
+      inventory.push(healthPotion);
+      console.log("\nCompraste una poción de curación. Ahora puedes usarla para restaurar tu salud cuando sea necesario.");
+    } else {
+      console.log("\nNo tienes suficiente oro para comprar la poción.");
+    }
+  }
 }
 
 function displayStatus(){
@@ -334,4 +411,20 @@ function checkInventory(){
 function quitGame(){
   console.log("\nGracias por jugar. ¡Hasta la próxima aventura!");
   gameRunning = false;
+}
+
+function getItemsByType(type) {
+  return inventory.filter(item => item.type === type);
+}
+
+function getBestItem(type) {
+  const items = getItemsByType(type);
+  if(items.length === 0) return null;
+  return items.reduce((best, item) => item.effect > best.effect ? item : best);
+}
+
+function hasGoodEquipment() {
+  const bestWeapon = getBestItem("weapon");
+  const bestArmor = getBestItem("armor");
+  return (bestWeapon && bestWeapon.effect >= 15) || (bestArmor && bestArmor.effect >= 5);
 }
