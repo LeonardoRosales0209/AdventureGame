@@ -23,6 +23,7 @@ let playerGold = 20;
 let currentLocation = "village";
 let gameRunning = true;
 let inventory = [];
+let defense = 0;
 
 let weaponDamage = 0;
 console.log("Daño de arma inicial: " + weaponDamage);
@@ -50,9 +51,6 @@ while (!playerName) {
 console.log(`Bienvenido, ${playerName}! Comienzas tu aventura con ${playerGold} piezas de oro.`);
 
 let firstVisit = true;
-let hasWeapon = false;
-let hasPotion = false;
-let hasArmor = false;
 
 while(gameRunning){
   showOptions();  
@@ -112,10 +110,11 @@ function showOptions(){
     console.log("El calor de la forja te envuelve mientras entras al herrero. Armas y armaduras relucen en las paredes, y el herrero te saluda con una sonrisa.");
     console.log("\n¿Qué te gustaría hacer?");
     console.log("1. Comprar una espada (10 gold)");
-    console.log("2. Regresa al pueblo (village)");
-    console.log("3. Revisar tu estado actual");
-    console.log("4. Revisar tu inventario");
-    console.log("5. Salir del juego");
+    console.log("2. Comprar una armadura (15 gold)");
+    console.log("3. Regresa al pueblo (village)");
+    console.log("4. Revisar tu estado actual");
+    console.log("5. Revisar tu inventario");
+    console.log("6. Salir del juego");
   }
   else if(currentLocation === "market"){
     console.log("=== MERCADO ===");
@@ -141,7 +140,7 @@ function processCombat(){
     let monsterHealth = 3;
     console.log("\n¡Un monstruo salvaje aparece!");
     while(inBattle){
-      if(!hasWeapon){
+      if(!inventory.includes("Espada")){
         console.log("No tienes un arma para luchar. El monstruo te ataca y pierdes 10 de salud.");
         health -= 10;
         console.log("Tu salud actual es: " + health);
@@ -164,7 +163,7 @@ function processCombat(){
         }
         else{
           console.log("El monstruo te ataca y pierdes 10 de salud.");
-          health -= 10;
+          health -= 20 - defense; // Si tienes defensa, reduce el daño recibido
           healing();
           if(health <= 0){            
             console.log("Has sido derrotado por el monstruo...");
@@ -178,13 +177,13 @@ function processCombat(){
     }}
 
 function healing(){
-  if(health < 30 && hasPotion){
+  if(health < 30 && inventory.includes("Pocion")){
     console.log("Usas una poción de curación para restaurar tu salud.");
     health += healingPotionValue;
     if(health > max_health){
       health = max_health;
     }
-    hasPotion = false;
+    inventory.splice(inventory.indexOf("Pocion"), 1); // Elimina la poción del inventario después de usarla
     console.log("Tu salud actual es: " + health);
   }
 }
@@ -213,8 +212,8 @@ function actionLocation(choice){
       quitGame();
     }
   }else if(currentLocation === "blacksmith" || currentLocation === "market"){
-    if(choice < 1 || choice > 5) {
-      throw "Opción no válida. Por favor, selecciona una opción del 1 al 5.";
+    if(choice < 1 || choice > 6) {
+      throw "Opción no válida. Por favor, selecciona una opción del 1 al 6.";
     }
         
     validChoice = true;
@@ -222,27 +221,36 @@ function actionLocation(choice){
       if(choice === 1) {
         if(playerGold >= 10){
           playerGold -= 10;
-          hasWeapon = true;
+          inventory.push("Espada");
           weaponDamage = 10;
           console.log("\nCompraste una espada. Tu daño de arma ahora es: " + weaponDamage);
         } else {
           console.log("\nNo tienes suficiente oro para comprar la espada.");
         }
       } else if(choice === 2) {
+        if(playerGold >= 15){
+          playerGold -= 15;
+          inventory.push("Escudo");
+          defense = 5;
+          console.log("\nCompraste una armadura. Tu defensa ahora es: " + defense);
+        } else {
+          console.log("\nNo tienes suficiente oro para comprar la armadura.");
+        }
+      } else if(choice === 3) {
         currentLocation = "village";
         console.log("\nRegresas al pueblo...");
-      } else if(choice === 3) {
-        displayStatus();
       } else if(choice === 4) {
-        checkInventory();
+        displayStatus();
       } else if(choice === 5) {
+        checkInventory();
+      } else if(choice === 6) {
         quitGame();
       }
     } else if(currentLocation === "market"){
       if(choice === 1) {
         if(playerGold >= 5){
           playerGold -= 5;
-          hasPotion = true;
+          inventory.push("Pocion");
           console.log("\nCompraste una poción de curación. Ahora puedes usarla para restaurar tu salud cuando sea necesario.");
         } else {
           console.log("\nNo tienes suficiente oro para comprar la poción.");
@@ -272,17 +280,13 @@ function displayStatus(){
 
 function checkInventory(){
   console.log("\n=== " + playerName + "'s Inventory ===");
-  for(let slot = 0; slot < 3; slot++){
-    console.log("Revisando el inventario en el slot " + (slot + 1));
-    if(slot === 1 && hasWeapon){
-      console.log("Inventario slot " + (slot + 1) + ": Espada");
-    } else if(slot === 2 && hasPotion){
-      console.log("Inventario slot " + (slot + 1) + ": Poción de curación");
-    } else if(slot === 3 && hasArmor){
-      console.log("Inventario slot " + (slot + 1) + ": Escudo");
-    } else {
-      console.log("Inventario slot " + (slot + 1) + ": Vacío");
-    }
+  if(inventory.length === 0){
+    console.log("Tu inventario está vacío.");
+  }
+  else{
+    inventory.forEach((item, index) => {
+      console.log((index + 1) + ". " + item);
+    });
   }
 }
 
