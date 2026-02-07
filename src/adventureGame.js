@@ -111,19 +111,21 @@ function showOptions(){
     console.log("=== HERRERO ===");
     console.log("El calor de la forja te envuelve mientras entras al herrero. Armas y armaduras relucen en las paredes, y el herrero te saluda con una sonrisa.");
     console.log("\n¿Qué te gustaría hacer?");
-    console.log("1. Regresa al pueblo (village)");
-    console.log("2. Revisar tu estado actual");
-    console.log("3. Revisar tu inventario");
-    console.log("4. Salir del juego");
+    console.log("1. Comprar una espada (10 gold)");
+    console.log("2. Regresa al pueblo (village)");
+    console.log("3. Revisar tu estado actual");
+    console.log("4. Revisar tu inventario");
+    console.log("5. Salir del juego");
   }
   else if(currentLocation === "market"){
     console.log("=== MERCADO ===");
     console.log("Mercaderes venden sus mercancías en coloridos puestos. Un vendedor de pociones atrapa tu atención.");
     console.log("\n¿Qué te gustaría hacer?");
-    console.log("1. Regresa al pueblo (village)");
-    console.log("2. Revisar tu estado actual");
-    console.log("3. Revisar tu inventario");
-    console.log("4. Salir del juego");
+    console.log("1. Comprar una poción de curación (5 gold)");
+    console.log("2. Regresa al pueblo (village)");
+    console.log("3. Revisar tu estado actual");
+    console.log("4. Revisar tu inventario");
+    console.log("5. Salir del juego");
   }
   else if(currentLocation === "forest"){
     console.log("=== BOSQUE ===");
@@ -187,7 +189,6 @@ function healing(){
   }
 }
 
-
 function actionLocation(choice){
   if(currentLocation === "village"){
     if(choice < 1 || choice > 6) {
@@ -212,20 +213,50 @@ function actionLocation(choice){
       quitGame();
     }
   }else if(currentLocation === "blacksmith" || currentLocation === "market"){
-    if(choice < 1 || choice > 4) {
-      throw "Opción no válida. Por favor, selecciona una opción del 1 al 4.";
+    if(choice < 1 || choice > 5) {
+      throw "Opción no válida. Por favor, selecciona una opción del 1 al 5.";
     }
         
     validChoice = true;
-    if(choice === 1) {
-      currentLocation = "village";
-      console.log("\nRegresas al pueblo...");
-    } else if(choice === 2) {
-      displayStatus();
-    } else if(choice === 3) {
-      checkInventory();
-    } else if(choice === 4) {
-      quitGame();
+    if(currentLocation === "blacksmith"){
+      if(choice === 1) {
+        if(playerGold >= 10){
+          playerGold -= 10;
+          hasWeapon = true;
+          weaponDamage = 10;
+          console.log("\nCompraste una espada. Tu daño de arma ahora es: " + weaponDamage);
+        } else {
+          console.log("\nNo tienes suficiente oro para comprar la espada.");
+        }
+      } else if(choice === 2) {
+        currentLocation = "village";
+        console.log("\nRegresas al pueblo...");
+      } else if(choice === 3) {
+        displayStatus();
+      } else if(choice === 4) {
+        checkInventory();
+      } else if(choice === 5) {
+        quitGame();
+      }
+    } else if(currentLocation === "market"){
+      if(choice === 1) {
+        if(playerGold >= 5){
+          playerGold -= 5;
+          hasPotion = true;
+          console.log("\nCompraste una poción de curación. Ahora puedes usarla para restaurar tu salud cuando sea necesario.");
+        } else {
+          console.log("\nNo tienes suficiente oro para comprar la poción.");
+        }
+      } else if(choice === 2) {
+        currentLocation = "village";
+        console.log("\nRegresas al pueblo...");
+      } else if(choice === 3) {
+        displayStatus();
+      } else if(choice === 4) {
+        checkInventory();
+      } else if(choice === 5) {
+        quitGame();
+      }
     }
   }
 
