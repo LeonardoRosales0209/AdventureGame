@@ -18,6 +18,7 @@ let playerName = "";
 
 // Creamos variables
 let health = 100;
+let max_health = 100;
 let playerGold = 20;
 let currentLocation = "village";
 let gameRunning = true;
@@ -74,7 +75,7 @@ while(gameRunning){
       }
 
       // Actua de acuerdo a la ubicación
-      validChoice = actionUbication(numChoice);
+      validChoice = actionLocation(numChoice);
     } catch (error) {
       console.log("\nError: " + error);
       console.log("Por favor, intenta de nuevo.");
@@ -128,26 +129,66 @@ function showOptions(){
     console.log("=== BOSQUE ===");
     console.log("Estás en el bosque. Hay rumores de que hay un dragón en las montañas...");
     console.log("Un bosque oscuro te rodea. Escuchas ruidos extraños...");
+    processCombat();
+  }    
+}
 
+function processCombat(){
     //Inicio de batalla
     let inBattle = true;
     let monsterHealth = 3;
     console.log("\n¡Un monstruo salvaje aparece!");
     while(inBattle){
-      console.log("Salud del monstruo: " + monsterHealth);
-      console.log(`Atacas al monstruo`);
-      monsterHealth--;
-      if(monsterHealth <= 0){
-        console.log("¡Has derrotado al monstruo!");
+      if(!hasWeapon){
+        console.log("No tienes un arma para luchar. El monstruo te ataca y pierdes 10 de salud.");
+        health -= 10;
+        console.log("Tu salud actual es: " + health);
+        healing();
+        console.log("Huyes del combate.");
         inBattle = false;
+        break;
       }
+      else{
+        console.log("\nTu salud: " + health);
+        console.log("Salud del monstruo: " + monsterHealth);
+        monsterHealth -= (weaponDamage - monsterDefense);
+        if(monsterHealth <= 0){
+          console.log("¡Has derrotado al monstruo!");
+          console.log("Ganas 10 piezas de oro.");
+          playerGold += 10;
+          inBattle = false;    
+          currentLocation = "village"; // Regresas al pueblo después de la batalla
+          console.log("\nRegresas al pueblo después de la batalla. El pueblo está tranquilo, pero sabes que el dragón sigue ahí afuera...");
+        }
+        else{
+          console.log("El monstruo te ataca y pierdes 10 de salud.");
+          health -= 10;
+          healing();
+          if(health <= 0){            
+            console.log("Has sido derrotado por el monstruo...");
+            inBattle = false;
+          }
+          else{
+            console.log("Tu salud actual es: " + health);
+          }
+        }
+      }
+    }}
+
+function healing(){
+  if(health < 30 && hasPotion){
+    console.log("Usas una poción de curación para restaurar tu salud.");
+    health += healingPotionValue;
+    if(health > max_health){
+      health = max_health;
     }
-    currentLocation = "village"; // Regresas al pueblo después de la batalla
-    console.log("\nRegresas al pueblo después de la batalla. El pueblo está tranquilo, pero sabes que el dragón sigue ahí afuera...");
+    hasPotion = false;
+    console.log("Tu salud actual es: " + health);
   }
 }
 
-function actionUbication(choice){
+
+function actionLocation(choice){
   if(currentLocation === "village"){
     if(choice < 1 || choice > 6) {
       throw "Opción no válida. Por favor, selecciona una opción del 1 al 6.";
